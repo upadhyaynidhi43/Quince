@@ -25,7 +25,7 @@
       <span class="top-banner-title-font">Test results</span>
       <button id="button" class="button">Switch Retro Theme</button> <!-- button -->
       <br/>
-      <span class="top-banner-font-1">1 suite</span>
+      <span class="top-banner-font-1">1 suite, 2 failed tests</span>
     </div> <!-- top-banner-root -->
     <div class="navigator-root">
       <div class="navigator-suite-header">
@@ -39,7 +39,7 @@
         <div class="rounded-window">
           <div class="suite-header light-rounded-window-top">
             <a href="#" panel-name="suite-Quince_PDP_Suite" class="navigator-link">
-              <span class="suite-name border-passed">Quince PDP Suite</span>
+              <span class="suite-name border-failed">Quince PDP Suite</span>
             </a> <!-- navigator-link -->
           </div> <!-- suite-header light-rounded-window-top -->
           <div class="navigator-suite-content">
@@ -92,7 +92,26 @@
               <div class="suite-section-content">
                 <ul>
                   <li>
-                    <span class="method-stats">3 methods,   3 passed</span>
+                    <span class="method-stats">3 methods, 2 failed,   1 passed</span>
+                  </li>
+                  <li>
+                    <span class="method-list-title failed">Failed methods</span>
+                    <span class="show-or-hide-methods failed">
+                      <a href="#" panel-name="suite-Quince_PDP_Suite" class="hide-methods failed suite-Quince_PDP_Suite"> (hide)</a> <!-- hide-methods failed suite-Quince_PDP_Suite -->
+                      <a href="#" panel-name="suite-Quince_PDP_Suite" class="show-methods failed suite-Quince_PDP_Suite"> (show)</a> <!-- show-methods failed suite-Quince_PDP_Suite -->
+                    </span>
+                    <div class="method-list-content failed suite-Quince_PDP_Suite">
+                      <span>
+                        <img src="failed.png" width="3%"/>
+                        <a href="#" panel-name="suite-Quince_PDP_Suite" title="com.ecommerce.cucumber.CucumberTestRunner" class="method navigator-link" hash-for-method="runScenario(&quot;PDP add-to-bag flow for user user-mock-002&quot;, &quot;Add product to cart on the Product Detail Page — mult...)">runScenario("PDP add-to-bag flow for user user-mock-002", "Add product to cart on the Product Detail Page — mult...)</a> <!-- method navigator-link -->
+                      </span>
+                      <br/>
+                      <span>
+                        <img src="failed.png" width="3%"/>
+                        <a href="#" panel-name="suite-Quince_PDP_Suite" title="com.ecommerce.cucumber.CucumberTestRunner" class="method navigator-link" hash-for-method="runScenario(&quot;PDP add-to-bag flow for user user-mock-001&quot;, &quot;Add product to cart on the Product Detail Page — mult...)">runScenario("PDP add-to-bag flow for user user-mock-001", "Add product to cart on the Product Detail Page — mult...)</a> <!-- method navigator-link -->
+                      </span>
+                      <br/>
+                    </div> <!-- method-list-content failed suite-Quince_PDP_Suite -->
                   </li>
                   <li>
                     <span class="method-list-title passed">Passed methods</span>
@@ -101,16 +120,6 @@
                       <a href="#" panel-name="suite-Quince_PDP_Suite" class="show-methods passed suite-Quince_PDP_Suite"> (show)</a> <!-- show-methods passed suite-Quince_PDP_Suite -->
                     </span>
                     <div class="method-list-content passed suite-Quince_PDP_Suite">
-                      <span>
-                        <img src="passed.png" width="3%"/>
-                        <a href="#" panel-name="suite-Quince_PDP_Suite" title="com.ecommerce.cucumber.CucumberTestRunner" class="method navigator-link" hash-for-method="runScenario(&quot;PDP add-to-bag flow for user user-mock-001&quot;, &quot;Add product to cart on the Product Detail Page — mult...)">runScenario("PDP add-to-bag flow for user user-mock-001", "Add product to cart on the Product Detail Page — mult...)</a> <!-- method navigator-link -->
-                      </span>
-                      <br/>
-                      <span>
-                        <img src="passed.png" width="3%"/>
-                        <a href="#" panel-name="suite-Quince_PDP_Suite" title="com.ecommerce.cucumber.CucumberTestRunner" class="method navigator-link" hash-for-method="runScenario(&quot;PDP add-to-bag flow for user user-mock-002&quot;, &quot;Add product to cart on the Product Detail Page — mult...)">runScenario("PDP add-to-bag flow for user user-mock-002", "Add product to cart on the Product Detail Page — mult...)</a> <!-- method navigator-link -->
-                      </span>
-                      <br/>
                       <span>
                         <img src="passed.png" width="3%"/>
                         <a href="#" panel-name="suite-Quince_PDP_Suite" title="com.ecommerce.cucumber.CucumberTestRunner" class="method navigator-link" hash-for-method="runScenario(&quot;PDP add-to-bag flow for user user-001&quot;, &quot;Add product to cart on the Product Detail Page — multi-use...)">runScenario("PDP add-to-bag flow for user user-001", "Add product to cart on the Product Detail Page — multi-use...)</a> <!-- method navigator-link -->
@@ -128,32 +137,50 @@
     <div class="wrapper">
       <div class="main-panel-root">
         <div panel-name="suite-Quince_PDP_Suite" class="panel Quince_PDP_Suite">
-          <div class="suite-Quince_PDP_Suite-class-passed">
+          <div class="suite-Quince_PDP_Suite-class-failed">
             <div class="main-panel-header rounded-window-top">
-              <img src="passed.png"/>
+              <img src="failed.png"/>
               <span class="class-name">com.ecommerce.cucumber.CucumberTestRunner</span>
             </div> <!-- main-panel-header rounded-window-top -->
             <div class="main-panel-content rounded-window-bottom">
-              <div class="method">
-                <div class="method-content">
-                  <a name="runScenario(&quot;PDP add-to-bag flow for user user-mock-001&quot;, &quot;Add product to cart on the Product Detail Page — mult...)">
-                  </a> <!-- runScenario("PDP add-to-bag flow for user user-mock-001", "Add product to cart on the Product Detail Page — mult...) -->
-                  <span class="method-name">runScenario</span>
-                  <span class="parameters">("PDP add-to-bag flow for user user-mock-001","Add product to cart on the Product Detail Page — multi-user experiment coverage")</span>
-                  <em>
-(Runs Cucumber Scenarios)                  </em>
-                </div> <!-- method-content -->
-              </div> <!-- method -->
               <div class="method">
                 <div class="method-content">
                   <a name="runScenario(&quot;PDP add-to-bag flow for user user-mock-002&quot;, &quot;Add product to cart on the Product Detail Page — mult...)">
                   </a> <!-- runScenario("PDP add-to-bag flow for user user-mock-002", "Add product to cart on the Product Detail Page — mult...) -->
                   <span class="method-name">runScenario</span>
                   <span class="parameters">("PDP add-to-bag flow for user user-mock-002","Add product to cart on the Product Detail Page — multi-user experiment coverage")</span>
+                  <div class="stack-trace">java.lang.RuntimeException: Experiment locators not yet configured — see &apos;Experiment Details&apos; step. Core flow passed.
+	at com.ecommerce.steps.PDPSteps.assertCartVisible(PDPSteps.java:199)
+	at ✽.the cart icon should be visible in the header(file:///Users/nidhi.upadhyay/Desktop/Quince/src/test/resources/features/pdp.feature:21)
+
+</div> <!-- stack-trace -->
                   <em>
 (Runs Cucumber Scenarios)                  </em>
                 </div> <!-- method-content -->
               </div> <!-- method -->
+              <div class="method">
+                <div class="method-content">
+                  <a name="runScenario(&quot;PDP add-to-bag flow for user user-mock-001&quot;, &quot;Add product to cart on the Product Detail Page — mult...)">
+                  </a> <!-- runScenario("PDP add-to-bag flow for user user-mock-001", "Add product to cart on the Product Detail Page — mult...) -->
+                  <span class="method-name">runScenario</span>
+                  <span class="parameters">("PDP add-to-bag flow for user user-mock-001","Add product to cart on the Product Detail Page — multi-user experiment coverage")</span>
+                  <div class="stack-trace">java.lang.RuntimeException: Experiment locators not yet configured — see &apos;Experiment Details&apos; step. Core flow passed.
+	at com.ecommerce.steps.PDPSteps.assertCartVisible(PDPSteps.java:199)
+	at ✽.the cart icon should be visible in the header(file:///Users/nidhi.upadhyay/Desktop/Quince/src/test/resources/features/pdp.feature:21)
+
+</div> <!-- stack-trace -->
+                  <em>
+(Runs Cucumber Scenarios)                  </em>
+                </div> <!-- method-content -->
+              </div> <!-- method -->
+            </div> <!-- main-panel-content rounded-window-bottom -->
+          </div> <!-- suite-Quince_PDP_Suite-class-failed -->
+          <div class="suite-Quince_PDP_Suite-class-passed">
+            <div class="main-panel-header rounded-window-top">
+              <img src="passed.png"/>
+              <span class="class-name">com.ecommerce.cucumber.CucumberTestRunner</span>
+            </div> <!-- main-panel-header rounded-window-top -->
+            <div class="main-panel-content rounded-window-bottom">
               <div class="method">
                 <div class="method-content">
                   <a name="runScenario(&quot;PDP add-to-bag flow for user user-001&quot;, &quot;Add product to cart on the Product Detail Page — multi-use...)">
@@ -230,15 +257,15 @@ data.addRows(3);
 data.setCell(0, 0, 0)
 data.setCell(0, 1, 'runScenario')
 data.setCell(0, 2, 'com.ecommerce.cucumber.CucumberTestRunner')
-data.setCell(0, 3, 12981);
+data.setCell(0, 3, 10733);
 data.setCell(1, 0, 1)
 data.setCell(1, 1, 'runScenario')
 data.setCell(1, 2, 'com.ecommerce.cucumber.CucumberTestRunner')
-data.setCell(1, 3, 8808);
+data.setCell(1, 3, 10336);
 data.setCell(2, 0, 2)
 data.setCell(2, 1, 'runScenario')
 data.setCell(2, 2, 'com.ecommerce.cucumber.CucumberTestRunner')
-data.setCell(2, 3, 8166);
+data.setCell(2, 3, 8467);
 window.suiteTableData['Quince_PDP_Suite']= { tableData: data, tableDiv: 'times-div-Quince_PDP_Suite'}
 return data;
 }
@@ -271,24 +298,28 @@ return data;
             <div class="chronological-class">
               <div class="chronological-class-name">com.ecommerce.cucumber.CucumberTestRunner</div> <!-- chronological-class-name -->
               <div class="configuration-class before">
-                <span class="method-name">setUpClass(org.testng.TestRunner@2513a118)</span>
+                <span class="method-name">setUpClass(org.testng.TestRunner@4a901445)</span>
                 <span class="method-start">0 ms</span>
               </div> <!-- configuration-class before -->
               <div class="test-method">
+                <img src="failed.png">
+                </img>
                 <span class="method-name">runScenario("PDP add-to-bag flow for user user-mock-001", "Add product to cart on the Product Detail Page — mult...)</span>
-                <span class="method-start">2724 ms</span>
+                <span class="method-start">2606 ms</span>
               </div> <!-- test-method -->
               <div class="test-method">
+                <img src="failed.png">
+                </img>
                 <span class="method-name">runScenario("PDP add-to-bag flow for user user-mock-002", "Add product to cart on the Product Detail Page — mult...)</span>
-                <span class="method-start">15706 ms</span>
+                <span class="method-start">13340 ms</span>
               </div> <!-- test-method -->
               <div class="test-method">
                 <span class="method-name">runScenario("PDP add-to-bag flow for user user-001", "Add product to cart on the Product Detail Page — multi-use...)</span>
-                <span class="method-start">24515 ms</span>
+                <span class="method-start">23681 ms</span>
               </div> <!-- test-method -->
               <div class="configuration-class after">
                 <span class="method-name">tearDownClass</span>
-                <span class="method-start">32683 ms</span>
+                <span class="method-start">32149 ms</span>
               </div> <!-- configuration-class after -->
           </div> <!-- main-panel-content rounded-window-bottom -->
         </div> <!-- panel -->

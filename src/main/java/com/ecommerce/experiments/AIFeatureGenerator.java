@@ -141,8 +141,7 @@ public class AIFeatureGenerator {
             throw new RuntimeException("Failed to write experiment files", e);
         }
 
-        return new GeneratedExperimentArtifact(featurePath, featureContent, locators,
-                variant.getExperimentName(), variant.getAssignedVariation());
+        return new GeneratedExperimentArtifact(featurePath, featureContent, locators, variant);
     }
 
     // ── Prompt builders ───────────────────────────────────────────────────────
@@ -332,8 +331,7 @@ public class AIFeatureGenerator {
             String featureContent = Files.readString(featurePath);
             Map<String, String> locators = mapper.readValue(
                     locatorsPath.toFile(), new TypeReference<Map<String, String>>() {});
-            return new GeneratedExperimentArtifact(featurePath, featureContent, locators,
-                    variant.getExperimentName(), variant.getAssignedVariation());
+            return new GeneratedExperimentArtifact(featurePath, featureContent, locators, variant);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load cached experiment files", e);
         }

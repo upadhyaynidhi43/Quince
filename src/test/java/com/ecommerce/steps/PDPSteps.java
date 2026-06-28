@@ -1,9 +1,12 @@
 package com.ecommerce.steps;
 
 import com.ecommerce.constants.PDPConstants;
+import com.ecommerce.cucumber.ExperimentAssertionExecutor;
 import com.ecommerce.cucumber.ExperimentContext;
+import com.ecommerce.cucumber.ExperimentFeatureLogger;
 import com.ecommerce.cucumber.PlaywrightContext;
 import com.ecommerce.experiments.ExperimentAssertionResult;
+import io.qameta.allure.model.Status;
 import com.ecommerce.experiments.FeatureGenerationContext;
 import com.ecommerce.experiments.TestPlanCache;
 import com.ecommerce.experiments.TestPlanExecutor;
@@ -162,9 +165,40 @@ public class PDPSteps {
 
     // ── Cart ──────────────────────────────────────────────────────────────────
 
+    /**
+     * Last step in every scenario — test case is still active in Allure lifecycle here.
+     * After confirming the cart icon (core flow), run experiment assertions and inject
+     * the "Experiment Details" step into the live test result while updateTestCase works.
+     */
     @Then("the cart icon should be visible in the header")
     public void assertCartVisible() {
         headerValidator().cartIconIsVisible();
+
+        // Run variant locator assertions while browser is open and test case is live
+        if (!experimentCtx.getGeneratedArtifacts().isEmpty()) {
+            java.util.List<ExperimentAssertionResult> results =
+                    ExperimentAssertionExecutor.run(
+                            experimentCtx.getGeneratedArtifacts(), pw.page());
+            results.forEach(experimentCtx::recordExperimentAssertion);
+        }
+
+        // Inject Experiment Details step; returned status drives row colour via a throw.
+        // AllureCucumber7Jvm ignores updateTestCase() status changes after step completes —
+        // only throwing from the step itself colours the test row correctly.
+        Status expStatus = ExperimentFeatureLogger.injectExperimentDetailsStep(
+                experimentCtx.getUser(),
+                experimentCtx.getVariant(),
+                experimentCtx.getGeneratedArtifacts(),
+                experimentCtx.getAssertionResults()
+        );
+
+        if (expStatus == Status.FAILED) {
+            throw new AssertionError(
+                    "Experiment assertions FAILED — see 'Experiment Details' step for breakdown. Core flow passed.");
+        } else if (expStatus == Status.BROKEN) {
+            throw new RuntimeException(
+                    "Experiment locators not yet configured — see 'Experiment Details' step. Core flow passed.");
+        }
     }
 
     // ── Variant-specific assertions (soft-assert — failure logs to Allure, never blocks core flow) ──
