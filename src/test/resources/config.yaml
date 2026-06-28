@@ -1,0 +1,14 @@
+baseUrl: "https://www.example-shop.com"
+browser: "chromium"          # chromium | firefox | webkit
+headless: false
+defaultTimeoutMs: 30000
+screenshotDir: "build/screenshots"
+environment: "staging"       # staging | production
+launchDarklySdkKey: "sdk-your-key-here"  # override via LD_SDK_KEY env var
+anthropicApiKey: "sk-ant-your-key-here"  # override via ANTHROPIC_API_KEY env var
+
+# Test user evaluated against LaunchDarkly flags — override via env vars
+testUserId: "user-pdp-001"       # override via TEST_USER_ID
+testUserCountry: "IN"            # override via TEST_USER_COUNTRY
+testUserPlan: "premium"          # override via TEST_USER_PLAN
+experimentFlagKey: "pdp-location-details"  # override via EXPERIMENT_FLAG_KEY

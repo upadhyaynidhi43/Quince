@@ -1,0 +1,99 @@
+plugins {
+    id 'java'
+}
+
+group = 'com.ecommerce'
+version = '1.0.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // Playwright
+    implementation 'com.microsoft.playwright:playwright:1.44.0'
+
+    // TestNG — required as Cucumber's test runner base
+    testImplementation 'org.testng:testng:7.10.2'
+
+    // Allure
+    testImplementation 'io.qameta.allure:allure-java-commons:2.27.0'
+
+    // Lombok — 1.18.38+ required for Java 21+/26 support
+    compileOnly 'org.projectlombok:lombok:1.18.38'
+    annotationProcessor 'org.projectlombok:lombok:1.18.38'
+    testCompileOnly 'org.projectlombok:lombok:1.18.38'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.38'
+
+    // Jackson — config + test-data deserialization
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.17.1'
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.17.1'
+
+    // Logging
+    implementation 'org.slf4j:slf4j-api:2.0.13'
+    implementation 'ch.qos.logback:logback-classic:1.5.6'
+
+    // Commons
+    implementation 'org.apache.commons:commons-lang3:3.14.0'
+
+    // LaunchDarkly Server-side SDK
+    implementation 'com.launchdarkly:launchdarkly-java-server-sdk:7.4.0'
+
+    // Anthropic Java SDK — AI test plan generation + self-healing
+    implementation 'com.anthropic:anthropic-java:2.34.0'
+
+    // Cucumber BDD
+    testImplementation 'io.cucumber:cucumber-java:7.18.0'
+    testImplementation 'io.cucumber:cucumber-testng:7.18.0'
+    testImplementation 'io.cucumber:cucumber-picocontainer:7.18.0'
+    testImplementation 'io.qameta.allure:allure-cucumber7-jvm:2.27.0'
+}
+
+// Disable the default test task — all tests run via cucumberTest
+test.enabled = false
+
+// Wipes previous run's raw results so the new report contains only the latest run
+tasks.register('cleanAllureResults', Delete) {
+    delete "${buildDir}/allure-results"
+    description = 'Deletes allure-results before each test run'
+    group = 'verification'
+}
+
+// Runs all Cucumber BDD scenarios via TestNG CLI
+tasks.register('cucumberTest', JavaExec) {
+    dependsOn 'testClasses', 'cleanAllureResults'
+    classpath  = sourceSets.test.runtimeClasspath
+    mainClass  = 'org.testng.TestNG'
+    args       = ["${projectDir}/src/test/resources/testng.xml"]
+    systemProperty 'allure.results.directory', "${buildDir}/allure-results"
+    jvmArgs '-Dfile.encoding=UTF-8'
+    description = 'Runs all Cucumber BDD feature files'
+    group = 'verification'
+    ignoreExitValue = true
+    finalizedBy 'generateAllureReport'
+}
+
+// Auto-generates Allure HTML report after every cucumberTest run (pass or fail)
+tasks.register('generateAllureReport', Exec) {
+    commandLine 'allure', 'generate',
+            "${buildDir}/allure-results", '--clean',
+            '-o', "${buildDir}/allure-report"
+    description = 'Generates Allure HTML report from test results'
+    group = 'verification'
+    doLast {
+        logger.lifecycle("Allure report ready → file://${buildDir}/allure-report/index.html")
+    }
+}
+
+// Open live Allure report in browser
+tasks.register('allureServe', Exec) {
+    dependsOn 'cucumberTest'
+    commandLine 'allure', 'serve', "${buildDir}/allure-results"
+    description = 'Runs tests then opens the Allure report in a browser'
+    group = 'verification'
+}

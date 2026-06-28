@@ -1,0 +1,27 @@
+package com.ecommerce.pages;
+
+/**
+ * All CSS / XPath locators for the Product Detail Page.
+ * No logic here — only selector strings.
+ */
+public final class PDPLocators {
+
+    private PDPLocators() {}
+
+    // ── Colour swatches ───────────────────────────────────────────────────────
+    public static final String COLOUR_OPTION_CONTAINER = "[data-option-type='Color']";
+    public static String colourLabel(String colour) {
+        return "[data-option-type='Color'] [data-value='" + colour + "'] label";
+    }
+
+    // ── Zip code / delivery ───────────────────────────────────────────────────
+    public static final String ZIP_CODE_BUTTON  = "button[class*='zipCodeButton']";
+    public static final String ZIP_INPUT        = "input[aria-label='Zip Code']";
+    public static final String ZIP_UPDATE       = "button[class*='updateBtn']";
+    public static final String MODAL_CLOSE      = "[data-testid='modal-close-button']";
+    public static final String EDD_MESSAGE      = ".eddMessageContainer_eddMessageWrapper__lWUVj";
+
+    // ── Cart ──────────────────────────────────────────────────────────────────
+    public static final String ADD_TO_BAG_BUTTON = "button:has(span:text(\"ADD TO BAG\"))";
+    // Cart icon lives in HeaderLocators — it belongs to the site header, not the PDP
+}
