@@ -1,4 +1,4 @@
-baseUrl: "https://www.example-shop.com"
+baseUrl: "https://www.quince.com/"
 browser: "chromium"          # chromium | firefox | webkit
 headless: false
 defaultTimeoutMs: 30000
@@ -8,7 +8,16 @@ launchDarklySdkKey: "sdk-your-key-here"  # override via LD_SDK_KEY env var
 anthropicApiKey: "sk-ant-your-key-here"  # override via ANTHROPIC_API_KEY env var
 
 # Test user evaluated against LaunchDarkly flags — override via env vars
+# Single user (legacy / default when testUserIds is absent)
 testUserId: "user-pdp-001"       # override via TEST_USER_ID
-testUserCountry: "IN"            # override via TEST_USER_COUNTRY
+
+# Multi-user list — each entry runs as a separate Scenario Outline row.
+# In mock mode: user-mock-001 and user-mock-002 are enrolled in experiments (Claude generates feature+locators).
+#               user-001 has no experiment assignment → base flow runs.
+testUserIds:
+  - "user-mock-001"
+  - "user-mock-002"
+  - "user-001"
+testUserCountry: "US"            # override via TEST_USER_COUNTRY
 testUserPlan: "premium"          # override via TEST_USER_PLAN
 experimentFlagKey: "pdp-location-details"  # override via EXPERIMENT_FLAG_KEY

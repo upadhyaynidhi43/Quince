@@ -2,14 +2,14 @@ package com.ecommerce.cucumber;
 
 import com.ecommerce.config.BrowserFactory;
 import com.ecommerce.config.FrameworkConfig;
+import com.ecommerce.experiments.AIFeatureGenerator;
 import com.ecommerce.experiments.AITestPlanner;
-import com.ecommerce.experiments.ExperimentUser;
-import com.ecommerce.experiments.ExperimentVariant;
+import com.ecommerce.experiments.ExperimentAssertionResult;
+import com.ecommerce.experiments.ExperimentResolver;
+import com.ecommerce.experiments.ILaunchDarklyClient;
 import com.ecommerce.experiments.LaunchDarklyClient;
+import com.ecommerce.experiments.MockLaunchDarklyClient;
 import com.ecommerce.experiments.TestPlanCache;
-import com.ecommerce.experiments.TestPlanExecutor;
-import com.ecommerce.experiments.model.TestPlan;
-import com.ecommerce.tests.product.PDPTestPlans;
 import com.ecommerce.utils.ScreenshotUtils;
 import com.microsoft.playwright.*;
 import io.cucumber.java.After;
@@ -22,29 +22,20 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.List;
 
 @Slf4j
 public class Hooks {
 
-    private static final Map<String, String> VARIATION_DESCRIPTIONS = new LinkedHashMap<>() {{
-        put("hide-location", "PDP page will NOT show location details");
-        put("show-location", "PDP page will show location details");
-    }};
-
     // ── Suite-scoped (created once, shared across all scenarios) ─────────────
-    private static Playwright         playwright;
-    private static Browser            browser;
-    private static LaunchDarklyClient ldClient;
-    private static TestPlanCache      cache;
-    private static AITestPlanner      aiPlanner;
-    private static TestPlanExecutor   executor;
+    private static Playwright          playwright;
+    private static Browser             browser;
+    private static ILaunchDarklyClient ldClient;
 
     // ── Scenario-scoped (injected by PicoContainer) ───────────────────────────
     private BrowserContext context;
-    private final PlaywrightContext  pw;
-    private final ExperimentContext  experimentCtx;
+    private final PlaywrightContext pw;
+    private final ExperimentContext experimentCtx;
 
     public Hooks(PlaywrightContext pw, ExperimentContext experimentCtx) {
         this.pw            = pw;
@@ -56,12 +47,25 @@ public class Hooks {
         FrameworkConfig cfg = FrameworkConfig.get();
         playwright = Playwright.create();
         browser    = BrowserFactory.createBrowser(playwright);
-        ldClient   = new LaunchDarklyClient();
-        cache      = new TestPlanCache();
-        aiPlanner  = new AITestPlanner();
-        executor   = new TestPlanExecutor(cache);
-        log.info("Suite started — browser={} env={}",
-                cfg.getBrowser(), cfg.getEnvironment());
+
+        if (cfg.isMock()) {
+            ldClient = new MockLaunchDarklyClient();
+            log.info("MOCK MODE — using MockLaunchDarklyClient (no LD SDK key required)");
+        } else {
+            ldClient = new LaunchDarklyClient();
+        }
+
+        ExperimentResolver resolver = new ExperimentResolver(
+                cfg,
+                ldClient,
+                new AIFeatureGenerator(),
+                new AITestPlanner(),
+                new TestPlanCache()
+        );
+        ExperimentContext.init(resolver);
+
+        log.info("Suite started — browser={} env={} mock={} users={}",
+                cfg.getBrowser(), cfg.getEnvironment(), cfg.isMock(), cfg.getTestUserIds());
     }
 
     @AfterAll
@@ -76,30 +80,46 @@ public class Hooks {
         log.info("Suite closed.");
     }
 
-    /**
-     * Before each scenario:
-     *  1. Open a fresh browser page.
-     *  2. Evaluate the LD experiment flag for the configured test user.
-     *  3. If experiment is ON  → check local cache → load plan if found,
-     *                            call LLM and save if not.
-     *     If experiment is OFF → mark context so PDPSteps runs the base flow.
-     *
-     * The feature file and step definitions are completely unaware of this.
-     */
     @Before
     public void openScenario() {
         FrameworkConfig cfg = FrameworkConfig.get();
-
         context = BrowserFactory.createContext(browser);
         Page page = context.newPage();
         page.setDefaultTimeout(cfg.getDefaultTimeoutMs());
         pw.setPage(page);
-
-        resolveExperiment(cfg);
     }
 
+    /**
+     * Single @After hook — order is irrelevant with only one.
+     *
+     * Sequence (browser still open throughout until context.close()):
+     *   1. Run experiment locator assertions programmatically (soft — never throws)
+     *   2. Attach generated feature + locator files to Allure
+     *   3. Log structured experiment summary + per-assertion steps to Allure
+     *   4. Capture failure screenshot if scenario failed
+     *   5. Close browser context
+     */
     @After
     public void closeScenario(Scenario scenario) {
+
+        // 1. Run experiment assertions while browser is still open
+        if (!experimentCtx.getGeneratedArtifacts().isEmpty() && pw.getPage() != null) {
+            List<ExperimentAssertionResult> results =
+                    ExperimentAssertionExecutor.run(experimentCtx.getGeneratedArtifacts(), pw.getPage());
+            results.forEach(experimentCtx::recordExperimentAssertion);
+            log.info("[Hooks] Experiment assertions executed — {} result(s)", results.size());
+        }
+
+        // 2+3. Log structured summary, attach feature files + locators, log soft failures
+        ExperimentFeatureLogger.logExperimentSummary(
+                scenario,
+                experimentCtx.getUser(),
+                experimentCtx.getVariant(),
+                experimentCtx.getGeneratedArtifacts(),
+                experimentCtx.getAssertionResults()
+        );
+
+        // 4. Screenshot on core flow failure
         if (scenario.isFailed() && pw.getPage() != null) {
             try {
                 Path shot = ScreenshotUtils.capture(pw.getPage(), scenario.getName());
@@ -108,61 +128,12 @@ public class Hooks {
                 log.warn("Could not capture screenshot for: {}", scenario.getName(), e);
             }
         }
+
+        // 5. Close browser
         if (context != null) context.close();
-        log.info("Scenario [{}] — {}", scenario.getStatus(), scenario.getName());
-    }
 
-    // ── Experiment resolution — invisible to feature files ───────────────────
-
-    private void resolveExperiment(FrameworkConfig cfg) {
-        ExperimentUser user = ExperimentUser.builder()
-                .userId(cfg.getTestUserId())
-                .email(cfg.getTestUserId() + "@example-shop.com")
-                .country(cfg.getTestUserCountry())
-                .plan(cfg.getTestUserPlan())
-                .build();
-
-        ExperimentVariant variant = ldClient.getExperimentDetails(
-                cfg.getExperimentFlagKey(), VARIATION_DESCRIPTIONS, user);
-
-        experimentCtx.setUser(user);
-        experimentCtx.setVariant(variant);
-
-        log.info("Experiment [{}] — ON={} variation=[{}] reason=[{}]",
-                cfg.getExperimentFlagKey(),
-                variant.isExperimentOn(),
-                variant.getAssignedVariation(),
-                variant.getEvaluationReason());
-
-        if (!variant.isExperimentOn()) {
-            log.info("Experiment OFF — base flow will run.");
-            experimentCtx.setResolvedPlan(null);
-            experimentCtx.setCacheHit(false);
-            return;
-        }
-
-        String userId    = user.getUserId();
-        String flagKey   = cfg.getExperimentFlagKey();
-        String variation = variant.getAssignedVariation();
-
-        if (cache.exists(flagKey, userId, variation)) {
-            TestPlan plan = cache.load(flagKey, userId, variation)
-                    .orElseThrow(() -> new IllegalStateException(
-                            "Cache file exists but could not be loaded: "
-                            + cache.cacheFilePath(flagKey, userId, variation)));
-            experimentCtx.setResolvedPlan(plan);
-            experimentCtx.setCacheHit(true);
-            log.info("Cache HIT — loaded variant plan locally, LLM skipped. [{}]",
-                    cache.cacheFilePath(flagKey, userId, variation));
-        } else {
-            log.info("Cache MISS — calling LLM to generate variant plan...");
-            TestPlan base     = PDPTestPlans.buildBasePlan(userId);
-            TestPlan enriched = aiPlanner.generateVariantPlan(base, variant);
-            cache.save(enriched);
-            experimentCtx.setResolvedPlan(enriched);
-            experimentCtx.setCacheHit(false);
-            log.info("LLM variant plan saved → {}",
-                    cache.cacheFilePath(flagKey, userId, variation));
-        }
+        log.info("Scenario [{}] — {} — user=[{}]",
+                scenario.getStatus(), scenario.getName(),
+                experimentCtx.getUser() != null ? experimentCtx.getUser().getUserId() : "unknown");
     }
 }

@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.InputStream;
+import java.util.List;
 
 /**
  * Loads framework configuration from config.yaml (or env overrides).
@@ -25,9 +26,13 @@ public class FrameworkConfig {
     @Getter private final String launchDarklySdkKey;
     @Getter private final String anthropicApiKey;
     @Getter private final String testUserId;
+    @Getter private final List<String> testUserIds;
     @Getter private final String testUserCountry;
     @Getter private final String testUserPlan;
     @Getter private final String experimentFlagKey;
+
+    /** True when -Pmock=true (or -Dmock=true) is passed at runtime. */
+    @Getter private final boolean mock;
 
     private FrameworkConfig(ConfigData data) {
         this.baseUrl             = resolve("BASE_URL",             data.baseUrl);
@@ -39,9 +44,22 @@ public class FrameworkConfig {
         this.launchDarklySdkKey  = resolve("LD_SDK_KEY",           data.launchDarklySdkKey);
         this.anthropicApiKey     = resolve("ANTHROPIC_API_KEY",    data.anthropicApiKey);
         this.testUserId          = resolve("TEST_USER_ID",         data.testUserId);
+        // testUserIds: env var TEST_USER_IDS can supply comma-separated list; falls back to yaml list
+        String envIds = System.getenv("TEST_USER_IDS");
+        if (envIds != null && !envIds.isBlank()) {
+            this.testUserIds = List.of(envIds.split(",")).stream()
+                    .map(String::trim).filter(s -> !s.isEmpty()).toList();
+        } else if (data.testUserIds != null && !data.testUserIds.isEmpty()) {
+            this.testUserIds = List.copyOf(data.testUserIds);
+        } else {
+            this.testUserIds = List.of(this.testUserId);
+        }
         this.testUserCountry     = resolve("TEST_USER_COUNTRY",    data.testUserCountry);
         this.testUserPlan        = resolve("TEST_USER_PLAN",       data.testUserPlan);
         this.experimentFlagKey   = resolve("EXPERIMENT_FLAG_KEY",  data.experimentFlagKey);
+        // -Dmock=true JVM property takes priority; falls back to MOCK env var, then false
+        String mockProp = System.getProperty("mock", System.getenv("MOCK"));
+        this.mock = "true".equalsIgnoreCase(mockProp);
     }
 
     public static FrameworkConfig get() {
@@ -78,6 +96,7 @@ public class FrameworkConfig {
         public String launchDarklySdkKey  = "";
         public String anthropicApiKey     = "";
         public String testUserId          = "user-pdp-001";
+        public java.util.List<String> testUserIds = new java.util.ArrayList<>();
         public String testUserCountry     = "IN";
         public String testUserPlan        = "premium";
         public String experimentFlagKey   = "pdp-location-details";

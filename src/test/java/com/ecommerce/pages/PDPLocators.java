@@ -24,4 +24,11 @@ public final class PDPLocators {
     // ── Cart ──────────────────────────────────────────────────────────────────
     public static final String ADD_TO_BAG_BUTTON = "button:has(span:text(\"ADD TO BAG\"))";
     // Cart icon lives in HeaderLocators — it belongs to the site header, not the PDP
+
+    // ── Experiment variant locators ───────────────────────────────────────────
+    // Fill these in once the variant UI is known, then promote them to permanent
+    // named constants (or remove) after the experiment is validated.
+    public static final String EXPERIMENT_VARIANT_CONTAINER = null; // TODO: set CSS selector for variant wrapper
+    public static final String EXPERIMENT_VARIANT_CTA       = null; // TODO: set CSS selector for variant CTA
+    public static final String EXPERIMENT_VARIANT_BADGE     = null; // TODO: set CSS selector for variant badge
 }

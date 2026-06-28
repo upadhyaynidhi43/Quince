@@ -51,4 +51,30 @@ public class PDPValidator {
         Assert.assertTrue(absent, "EDD message should NOT be visible for invalid zip");
         log.info("EDD message confirmed not visible");
     }
+
+    // ── Generic locator assertions — used by Claude-generated feature steps ───
+
+    public void locatorIsVisible(String locator) {
+        page.waitForSelector(locator,
+                new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
+        Assert.assertTrue(page.locator(locator).isVisible(),
+                "Expected element to be visible: " + locator);
+        log.info("Element visible: {}", locator);
+    }
+
+    public void locatorIsNotVisible(String locator) {
+        boolean absent = page.locator(locator).count() == 0
+                || !page.locator(locator).first().isVisible();
+        Assert.assertTrue(absent, "Expected element to NOT be visible: " + locator);
+        log.info("Element not visible (as expected): {}", locator);
+    }
+
+    public void locatorContainsText(String locator, String expectedText) {
+        page.waitForSelector(locator,
+                new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
+        String actual = page.locator(locator).textContent();
+        Assert.assertTrue(actual != null && actual.contains(expectedText),
+                "Element [" + locator + "] should contain '" + expectedText + "' but was: " + actual);
+        log.info("Element [{}] contains text: {}", locator, expectedText);
+    }
 }

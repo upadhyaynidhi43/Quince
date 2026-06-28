@@ -1,43 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
+<testng-results ignored="0" total="3" passed="3" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2026-06-27T23:50:28 IST" name="Quince PDP Suite" finished-at="2026-06-27T23:50:41 IST" duration-ms="13025">
+  <suite started-at="2026-06-28T22:12:57 IST" name="Quince PDP Suite" finished-at="2026-06-28T22:13:30 IST" duration-ms="32775">
     <groups>
       <group name="cucumber">
         <method signature="AbstractTestNGCucumberTests.runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:com.ecommerce.cucumber.CucumberTestRunner@1e683a3e]" name="runScenario" class="io.cucumber.testng.AbstractTestNGCucumberTests"/>
       </group> <!-- cucumber -->
     </groups>
-    <test started-at="2026-06-27T23:50:28 IST" name="PDP Cucumber Tests" finished-at="2026-06-27T23:50:41 IST" duration-ms="13025">
+    <test started-at="2026-06-28T22:12:57 IST" name="PDP Cucumber Tests" finished-at="2026-06-28T22:13:30 IST" duration-ms="32775">
       <class name="com.ecommerce.cucumber.CucumberTestRunner">
-        <test-method is-config="true" signature="setUpClass(org.testng.ITestContext)[pri:0, instance:com.ecommerce.cucumber.CucumberTestRunner@1e683a3e]" started-at="2026-06-27T23:50:28 IST" name="setUpClass" finished-at="2026-06-27T23:50:31 IST" duration-ms="3281" status="PASS">
+        <test-method is-config="true" signature="setUpClass(org.testng.ITestContext)[pri:0, instance:com.ecommerce.cucumber.CucumberTestRunner@1e683a3e]" started-at="2026-06-28T22:12:57 IST" name="setUpClass" finished-at="2026-06-28T22:13:00 IST" duration-ms="2719" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[org.testng.TestRunner@b61edb9]]>
+                <![CDATA[org.testng.TestRunner@2513a118]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setUpClass -->
-        <test-method signature="runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:com.ecommerce.cucumber.CucumberTestRunner@1e683a3e]" started-at="2026-06-27T23:50:31 IST" name="runScenario" description="Runs Cucumber Scenarios" data-provider="scenarios" finished-at="2026-06-27T23:50:41 IST" duration-ms="9664" status="PASS">
+        <test-method signature="runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:com.ecommerce.cucumber.CucumberTestRunner@1e683a3e]" started-at="2026-06-28T22:13:00 IST" name="runScenario" description="Runs Cucumber Scenarios" data-provider="scenarios" finished-at="2026-06-28T22:13:13 IST" duration-ms="12981" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA["Add Black colour to cart after confirming delivery to New York"]]>
+                <![CDATA["PDP add-to-bag flow for user user-mock-001"]]>
               </value>
             </param>
             <param index="1">
               <value>
-                <![CDATA["Add product to cart on the Product Detail Page"]]>
+                <![CDATA["Add product to cart on the Product Detail Page — multi-user experiment coverage"]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- runScenario -->
-        <test-method is-config="true" signature="tearDownClass()[pri:0, instance:com.ecommerce.cucumber.CucumberTestRunner@1e683a3e]" started-at="2026-06-27T23:50:41 IST" name="tearDownClass" finished-at="2026-06-27T23:50:41 IST" duration-ms="66" status="PASS">
+        <test-method signature="runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:com.ecommerce.cucumber.CucumberTestRunner@1e683a3e]" started-at="2026-06-28T22:13:13 IST" name="runScenario" description="Runs Cucumber Scenarios" data-provider="scenarios" finished-at="2026-06-28T22:13:22 IST" duration-ms="8808" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA["PDP add-to-bag flow for user user-mock-002"]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA["Add product to cart on the Product Detail Page — multi-user experiment coverage"]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- runScenario -->
+        <test-method signature="runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:com.ecommerce.cucumber.CucumberTestRunner@1e683a3e]" started-at="2026-06-28T22:13:22 IST" name="runScenario" description="Runs Cucumber Scenarios" data-provider="scenarios" finished-at="2026-06-28T22:13:30 IST" duration-ms="8166" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA["PDP add-to-bag flow for user user-001"]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA["Add product to cart on the Product Detail Page — multi-user experiment coverage"]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- runScenario -->
+        <test-method is-config="true" signature="tearDownClass()[pri:0, instance:com.ecommerce.cucumber.CucumberTestRunner@1e683a3e]" started-at="2026-06-28T22:13:30 IST" name="tearDownClass" finished-at="2026-06-28T22:13:30 IST" duration-ms="85" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDownClass -->

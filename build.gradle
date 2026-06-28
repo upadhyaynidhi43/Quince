@@ -71,6 +71,11 @@ tasks.register('cucumberTest', JavaExec) {
     mainClass  = 'org.testng.TestNG'
     args       = ["${projectDir}/src/test/resources/testng.xml"]
     systemProperty 'allure.results.directory', "${buildDir}/allure-results"
+    // Pass -Pmock=true from Gradle CLI → -Dmock=true JVM property inside the test JVM
+    // (no tag override needed — mock mode only changes LD routing, not which scenarios run)
+    if (project.hasProperty('mock') && project.property('mock') == 'true') {
+        systemProperty 'mock', 'true'
+    }
     jvmArgs '-Dfile.encoding=UTF-8'
     description = 'Runs all Cucumber BDD feature files'
     group = 'verification'

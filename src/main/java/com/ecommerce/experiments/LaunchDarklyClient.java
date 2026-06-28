@@ -8,7 +8,6 @@ import com.launchdarkly.sdk.server.LDClient;
 import com.launchdarkly.sdk.server.LDConfig;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -29,7 +28,7 @@ import java.util.Map;
  *   - variationDescriptions (passed in) → human-readable label per variant key
  */
 @Slf4j
-public class LaunchDarklyClient implements Closeable {
+public class LaunchDarklyClient implements ILaunchDarklyClient {
 
     private final LDClient ldClient;
 
