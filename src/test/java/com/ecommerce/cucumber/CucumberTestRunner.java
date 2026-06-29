@@ -5,7 +5,7 @@ import io.cucumber.testng.CucumberOptions;
 import org.testng.annotations.DataProvider;
 
 @CucumberOptions(
-        features  = "src/test/resources/features",
+        features  = "build/generated-features",
         glue      = {"com.ecommerce.cucumber", "com.ecommerce.steps"},
         plugin    = {
                 "pretty",

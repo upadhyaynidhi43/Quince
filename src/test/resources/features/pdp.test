@@ -4,10 +4,8 @@ Feature: Add product to cart on the Product Detail Page — multi-user experimen
   I want to select a colour, verify delivery availability, and add the product to my bag
   So that the correct experience is served based on my experiment assignment
 
-  # Runs once per user in the Examples table.
-  # user-mock-001 → enrolled in both experiments  → Claude generates feature + locators
-  # user-mock-002 → enrolled in experiment 2 only → Claude generates feature + locators
-  # user-001      → not enrolled in any experiment → base flow runs as-is
+  # User IDs injected at build time from -PtestUserIds=... or TEST_USER_IDS env var.
+  # Default: user-mock-001, user-mock-002, user-001
   @smoke @multiuser
   Scenario Outline: PDP add-to-bag flow for user <userId>
     Given I am the test user "<userId>"
@@ -21,7 +19,5 @@ Feature: Add product to cart on the Product Detail Page — multi-user experimen
     Then the cart icon should be visible in the header
 
     Examples:
-      | userId         |
-      | user-mock-001  |
-      | user-mock-002  |
-      | user-001       |
+      | userId |
+{{EXAMPLES}}

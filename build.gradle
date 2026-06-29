@@ -57,6 +57,45 @@ dependencies {
 // Disable the default test task — all tests run via cucumberTest
 test.enabled = false
 
+/**
+ * Scans src/test/resources/features/ for all *.test files and generates
+ * a matching *.feature in build/generated-features/ for each one,
+ * substituting {{EXAMPLES}} with one row per user ID.
+ *
+ * User IDs come from (first wins):
+ *   1. -PtestUserIds=id1,id2   Gradle CLI property
+ *   2. TEST_USER_IDS=id1,id2   environment variable
+ *   3. default: user-mock-001,user-mock-002,user-001
+ *
+ * To add a new feature: create a *.test file — no changes to build.gradle needed.
+ */
+tasks.register('generateFeatureFiles') {
+    group       = 'verification'
+    description = 'Generates *.feature files from *.test templates in src/test/resources/features/'
+
+    def templateDir = file('src/test/resources/features')
+    def outputDir   = file("${buildDir}/generated-features")
+    inputs.dir   templateDir
+    outputs.dir  outputDir
+
+    doLast {
+        def ids = (project.findProperty('testUserIds')
+                ?: System.getenv('TEST_USER_IDS')
+                ?: 'user-mock-001,user-mock-002,user-001')
+                .split(',').collect { it.trim() }.findAll { it }
+
+        def rows = ids.collect { "      | ${it} |" }.join('\n')
+
+        outputDir.mkdirs()
+        fileTree(templateDir).matching { include '**/*.test' }.each { templateFile ->
+            def featureName = templateFile.name.replace('.test', '.feature')
+            def outputFile  = new File(outputDir, featureName)
+            outputFile.text = templateFile.text.replace('{{EXAMPLES}}', rows)
+            logger.lifecycle("Generated ${featureName} — users: ${ids}")
+        }
+    }
+}
+
 // Wipes previous run's raw results so the new report contains only the latest run
 tasks.register('cleanAllureResults', Delete) {
     delete "${buildDir}/allure-results"
@@ -66,15 +105,18 @@ tasks.register('cleanAllureResults', Delete) {
 
 // Runs all Cucumber BDD scenarios via TestNG CLI
 tasks.register('cucumberTest', JavaExec) {
-    dependsOn 'testClasses', 'cleanAllureResults'
+    dependsOn 'testClasses', 'cleanAllureResults', 'generateFeatureFiles'
     classpath  = sourceSets.test.runtimeClasspath
     mainClass  = 'org.testng.TestNG'
     args       = ["${projectDir}/src/test/resources/testng.xml"]
     systemProperty 'allure.results.directory', "${buildDir}/allure-results"
-    // Pass -Pmock=true from Gradle CLI → -Dmock=true JVM property inside the test JVM
-    // (no tag override needed — mock mode only changes LD routing, not which scenarios run)
     if (project.hasProperty('mock') && project.property('mock') == 'true') {
         systemProperty 'mock', 'true'
+    }
+    // Secret keys — sourced exclusively from environment variables; never hardcoded
+    ['LD_SDK_KEY', 'ANTHROPIC_API_KEY'].each { key ->
+        def val = System.getenv(key)
+        if (val) environment key, val
     }
     jvmArgs '-Dfile.encoding=UTF-8'
     description = 'Runs all Cucumber BDD feature files'
