@@ -9,7 +9,6 @@ import com.ecommerce.experiments.ILaunchDarklyClient;
 import com.ecommerce.experiments.LaunchDarklyClient;
 import com.ecommerce.experiments.MockLaunchDarklyClient;
 import com.ecommerce.experiments.TestPlanCache;
-import com.ecommerce.utils.ScreenshotUtils;
 import com.microsoft.playwright.*;
 import io.cucumber.java.After;
 import io.cucumber.java.AfterAll;
@@ -19,8 +18,6 @@ import io.cucumber.java.Scenario;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 @Slf4j
 public class Hooks {
@@ -100,12 +97,11 @@ public class Hooks {
                 experimentCtx.getAssertionResults()
         );
 
-        // Screenshot on core flow failure
         if (scenario.isFailed() && pw.getPage() != null) {
             try {
-                Path shot = ScreenshotUtils.capture(pw.getPage(), scenario.getName());
-                scenario.attach(Files.readAllBytes(shot), "image/png", "failure-screenshot");
-            } catch (IOException e) {
+                byte[] shot = pw.getPage().screenshot(new Page.ScreenshotOptions().setFullPage(true));
+                scenario.attach(shot, "image/png", "failure-screenshot");
+            } catch (Exception e) {
                 log.warn("Could not capture screenshot for: {}", scenario.getName(), e);
             }
         }
