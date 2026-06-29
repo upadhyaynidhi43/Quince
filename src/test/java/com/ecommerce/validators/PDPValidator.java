@@ -21,6 +21,8 @@ public class PDPValidator {
     }
 
     public void colourIsActive(String colour) {
+        page.waitForSelector(PDPLocators.colourLabel(colour),
+                new Page.WaitForSelectorOptions().setState(WaitForSelectorState.VISIBLE));
         Locator label = page.locator(PDPLocators.colourLabel(colour));
         Assert.assertTrue(label.isVisible(),
                 colour + " colour label should be visible after selection");

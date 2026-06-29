@@ -19,7 +19,8 @@ public final class PDPLocators {
     public static final String ZIP_INPUT        = "input[aria-label='Zip Code']";
     public static final String ZIP_UPDATE       = "button[class*='updateBtn']";
     public static final String MODAL_CLOSE      = "[data-testid='modal-close-button']";
-    public static final String EDD_MESSAGE      = ".eddMessageContainer_eddMessageWrapper__lWUVj";
+    // Hashed class names break on every redeploy — use text/role-based selector instead
+    public static final String EDD_MESSAGE      = "[class*='eddMessageWrapper'], [class*='eddMessage']";
 
     // ── Cart ──────────────────────────────────────────────────────────────────
     public static final String ADD_TO_BAG_BUTTON = "button:has(span:text(\"ADD TO BAG\"))";
